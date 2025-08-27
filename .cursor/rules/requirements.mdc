@@ -1,0 +1,199 @@
+---
+description: Requirements file with an overall context about the project
+alwaysApply: false
+---
+# Counterfeit Capture App — Requirements Document
+
+## 0) Purpose & Scope
+
+Single-purpose Android app to **capture structured product images** at retail locations for a downstream counterfeit-detection ML pipeline.
+
+* Captures required: **Top**, **Bottom**, **Front (IJP)**, **Address Info**, **Back of Pack**, **Legal Box**, and a possible 7th angle (to be confirmed).
+* Each capture is tied to a **Shop** (shop code → name) and a **Product** (search → select).
+* Workflow: user login → dashboard → shop code → product search → guided capture (all angles) → preview all → save → summary → dashboard or capture another.
+* Images must be uploaded to **Amazon S3** via **presigned URLs**.
+* Start with **mock backend modules** (to be swapped later).
+
+---
+
+## 1) Tech Stack & Libraries
+
+* **React Native** + **TypeScript**
+* **Expo** (`npx create-expo-app`) with **Expo Go** for demos
+* Navigation: `expo-router` (preferred) or `@react-navigation/*`
+* Camera: `expo-camera`
+* Image manipulation: `expo-image-manipulator`
+* Filesystem: `expo-file-system`
+* Location: `expo-location`
+* Storage: `@react-native-async-storage/async-storage`
+* Network: `axios` or fetch
+* UUIDs: `react-native-uuid`
+* Env vars: `expo-constants` or `react-native-dotenv`
+
+---
+
+## 2) High-Level Workflow
+
+1. **Login** (demo; hardcoded)
+2. **Dashboard** → My Captures | New Capture
+3. **New Capture → Shop** (enter shop code → optional name lookup)
+4. **Product Search** (type-ahead → select product)
+5. **Guided Capture** (angle reference + camera viewport → capture/retake → next)
+6. **Preview All** (grid/list with retake option)
+7. **Save** (capture metadata, location, trigger upload queue)
+8. **Summary** (shop info, product info, geo, status)
+9. Actions: Capture Another (same shop) | Dashboard
+
+---
+
+## 3) Screen Map (expo-router)
+
+```
+/ (root)
+/login.tsx
+/dashboard.tsx
+/captures/index.tsx
+/capture/new/shop.tsx
+/capture/new/product.tsx
+/capture/[sessionId]/step/[angle].tsx
+/capture/[sessionId]/preview.tsx
+/capture/[sessionId]/summary.tsx
+```
+
+---
+
+## 4) Data Model (TypeScript)
+
+```ts
+export type CaptureAngle =
+  | "top"
+  | "bottom"
+  | "front_ijp"    // confirm label
+  | "address_info"
+  | "back_of_pack"
+  | "legal_box"
+  | "extra_7th?";  // confirm
+
+export interface Product {
+  id: string;
+  code: string;
+  name: string;
+}
+
+export interface Geo {
+  lat: number;
+  lon: number;
+  accuracy?: number;
+  capturedAt: string;
+}
+
+export interface CaptureImage {
+  id: string;
+  angle: CaptureAngle;
+  localUri: string;
+  width: number;
+  height: number;
+  fileSize: number;
+  s3Key?: string;
+  uploadStatus: "pending" | "uploading" | "uploaded" | "failed";
+}
+
+export interface CaptureSession {
+  id: string;
+  shopCode: string;
+  shopName?: string;
+  productId: string;
+  productCode: string;
+  productName: string;
+  startedAt: string;
+  completedAt?: string;
+  geo?: Geo;
+  images: CaptureImage[];
+  status: "in_progress" | "saved" | "uploaded" | "upload_failed";
+}
+```
+
+---
+
+## 5) API Contracts (Mock First)
+
+* **POST /auth/demo-login** → `{ token }`
+* **GET /shops/{shopCode}** → `{ shopCode, shopName }`
+* **GET /products/search?q=** → `{ products: Product[] }`
+* **POST /uploads/presign** → `{ urls: [...] }`
+* **POST /captures/metadata** → `{ ok: true, captureId }`
+
+---
+
+## 6) Capture & Upload Flow
+
+1. User takes picture → resize (≤1600px), compress (JPEG, q=0.8), save to FS.
+2. Add entry to session (status `pending`).
+3. On Save: request presigned URLs → upload each file → mark status.
+4. After uploads: send session metadata JSON → mark session uploaded.
+5. Retry failed uploads from My Captures.
+
+---
+
+## 7) Permissions
+
+* **Camera**: for captures
+* **Location**: captured at Save step only
+* Explain to user: geo is recorded to validate capture provenance.
+
+---
+
+## 8) Phase-Wise Implementation Plan
+
+### Phase 0 — Bootstrap
+
+* Expo project init, add libraries, set permissions.
+
+### Phase 1 — Auth & Navigation
+
+* Demo login, token stored in AsyncStorage.
+* Router guard.
+
+### Phase 2 — Shop & Product Selection
+
+* Shop code input + mock lookup.
+* Product search with mock API.
+
+### Phase 3 — Capture Flow
+
+* Guided camera capture per angle.
+* Save resized/compressed image.
+
+### Phase 4 — Preview All
+
+* List/grid of all images with retake option.
+* Save button enabled when complete.
+
+### Phase 5 — Summary + Upload Queue
+
+* On Save: capture geo, presign URLs, upload images.
+* Send metadata.
+* Show summary.
+
+### Phase 6 — My Captures
+
+* List past sessions with upload status.
+* Retry upload button.
+
+### Phase 7 — Polish
+
+* Handle network loss, retries.
+* Ensure image consistency for ML.
+
+---
+
+## 9) Open Questions
+
+1. You listed 6 angles but said 7 captures. What is the missing one?
+2. Confirm what **“IJP front”** means.
+3. Should shop name be manual entry if API is absent?
+4. How should product search work offline? Or always API?
+5. Confirm S3 bucket, region, and object key convention.
+6. Is geo mandatory? Or optional?
+7. Should Save work offline with later upload?
+8. Does ML pipeline require fixed aspect ratio/resolution?

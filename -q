@@ -1,0 +1,54 @@
+DEBUG output created by Wget 1.21.4 on linux-gnu.
+
+Reading HSTS entries from /home/foxtrot/.wget-hsts
+URI encoding = ‘UTF-8’
+Caching dl.google.com => 142.251.42.46 2404:6800:4009:830::200e
+Created socket 5.
+Releasing 0x000055e9c3e3cfe0 (new refcount 1).
+Initiating SSL handshake.
+Handshake successful; connected socket 5 to SSL handle 0x000055e9c3e44850
+certificate:
+  subject: CN=*.google.com
+  issuer:  CN=WR2,O=Google Trust Services,C=US
+X509 certificate successfully verified and matches host dl.google.com
+
+---request begin---
+GET /android/repository/platform-tools-latest-linux.zip; HTTP/1.1
+Host: dl.google.com
+User-Agent: Wget/1.21.4
+Accept: */*
+Accept-Encoding: identity
+Connection: Keep-Alive
+
+---request end---
+
+---response begin---
+HTTP/1.1 404 Not Found
+Content-Length: 1449
+Content-Type: text/html; charset=utf-8
+Server: downloads
+X-Content-Type-Options: nosniff
+X-Frame-Options: SAMEORIGIN
+X-Xss-Protection: 0
+Date: Wed, 27 Aug 2025 22:21:14 GMT
+Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+
+---response end---
+Registered socket 5 for persistent reuse.
+URI content encoding = ‘utf-8’
+Skipping 1449 bytes of body: [
+<!DOCTYPE html>
+<html lang=en>
+  <meta charset=utf-8>
+  <meta name=viewport content="initial-scale=1, minimum-scale=1, width=device-width">
+  <title>Error 404 (Not Found)!!1</title>
+  <style>
+    *{margin:0;padding:0}html,code{font:15px/22px arial,sans-serif}html{background:#fff;color:#222;padding:15px}body{margin:7% auto 0;max-width:390px;min-height:180px;padding:30px 0 15px}* > body{background:url(//www.google.com/images/errors/robot.png) 100% 5px no-repeat;padding-right:205px}p{margin:11px 0 22px;overflSkipping 937 bytes of body: [ow:hidden}ins{color:#777;text-decoration:none}a img{border:0}@media screen and (max-width:772px){body{background:none;margin-top:0;max-width:none;padding-right:0}}#logo{background:url(//www.google.com/images/logos/errorpage/error_logo-150x54.png) no-repeat;margin-left:-5px}@media only screen and (min-resolution:192dpi){#logo{background:url(//www.google.com/images/logos/errorpage/error_logo-150x54-2x.png) no-repeat 0% 0%/100% 100%;-moz-border-image:url(//www.google.com/images/logos/errorpage/error_logo-150x5Skipping 425 bytes of body: [4-2x.png) 0}}@media only screen and (-webkit-min-device-pixel-ratio:2)Skipping 355 bytes of body: [{#logo{background:url(//www.google.com/images/logos/errorpage/error_logo-150x54-2x.png) no-repeat;-webkit-background-size:100% 100%}}#logo{display:inline-block;height:54px;width:150px}
+  </style>
+  <a href=//www.google.com/><span id=logo aria-label=Google></span></a>
+  <p><b>404.</b> <ins>That’s an error.</ins>
+  <p>  <ins>That’s all we know.</ins>
+] done.
+URI encoding = ‘UTF-8’
+URI encoding = ‘UTF-8’
+URI encoding = ‘UTF-8’
