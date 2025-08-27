@@ -1,6 +1,34 @@
 # Welcome to your Expo app 👋
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+VeriLens — Counterfeit Capture App (Expo + TypeScript)
+
+Quick start:
+
+1) Install deps
+
+```
+npm install
+```
+
+2) Start the app
+
+```
+npm run android
+```
+
+Features implemented (mock backend):
+
+- Demo auth and router guard (`app/_layout.tsx`, `app/login.tsx`)
+- Dashboard and My Captures tabs
+- Shop entry and Product search (`/capture/new/...`)
+- Guided capture for required angles
+- Preview and Save (captures geo)
+- Mock upload queue with presign + upload + metadata
+- Summary screen and retry failed uploads from My Captures
+
+Notes:
+- Android permissions for camera and location are set in `app.json`.
+- Uploads and APIs are mocked in `lib/api/mock.ts`. Swap with real endpoints later.
 
 ## Get started
 
