@@ -1,10 +1,10 @@
-import { useLocalSearchParams, router } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { FlatList, Pressable, TextInput, View } from 'react-native';
-import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from '@/components/ThemedView';
 import { searchProducts } from '@/lib/api/mock';
 import type { Product } from '@/types/models';
+import { router, useLocalSearchParams } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { FlatList, Pressable, TextInput, View } from 'react-native';
 
 export default function ProductScreen() {
   const { shopCode, shopName } = useLocalSearchParams<{ shopCode: string; shopName?: string }>();
@@ -19,7 +19,8 @@ export default function ProductScreen() {
   }, [q]);
 
   const select = (product: Product) => {
-    router.push({ pathname: `/capture/${'new'}/step/top`, params: { shopCode, shopName, product: JSON.stringify(product) } });
+    const url = `/capture/new/step/top?shopCode=${encodeURIComponent(String(shopCode))}&product=${encodeURIComponent(JSON.stringify(product))}` + (shopName ? `&shopName=${encodeURIComponent(String(shopName))}` : '');
+    router.push(url);
   };
 
   return (

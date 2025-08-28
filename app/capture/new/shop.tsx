@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import { View, TextInput, Pressable } from 'react-native';
-import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from '@/components/ThemedView';
 import { getShop } from '@/lib/api/mock';
 import { router } from 'expo-router';
+import { useState } from 'react';
+import { Pressable, TextInput } from 'react-native';
 
 export default function ShopScreen() {
   const [shopCode, setShopCode] = useState('');
@@ -11,14 +11,22 @@ export default function ShopScreen() {
   const [loading, setLoading] = useState(false);
 
   const lookup = async () => {
+    if (!shopCode.trim()) return;
     setLoading(true);
-    const res = await getShop(shopCode.trim());
-    setShopName(res?.shopName ?? undefined);
-    setLoading(false);
+    try {
+      const res = await getShop(shopCode.trim());
+      setShopName(res?.shopName ?? undefined);
+    } catch (e) {
+      setShopName(undefined);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const next = () => {
-    router.push({ pathname: '/capture/new/product', params: { shopCode, shopName } });
+    const base = `/capture/new/product?shopCode=${encodeURIComponent(shopCode.trim())}`;
+    const url = shopName ? `${base}&shopName=${encodeURIComponent(shopName)}` : base;
+    router.push(url);
   };
 
   const canNext = shopCode.trim().length > 0;
@@ -33,6 +41,8 @@ export default function ShopScreen() {
         placeholder="e.g. SHP123"
         style={{ marginTop: 8, backgroundColor: '#1f232a', color: '#fff', padding: 12, borderRadius: 8 }}
         autoCapitalize="characters"
+        returnKeyType="search"
+        onSubmitEditing={lookup}
       />
       <Pressable onPress={lookup} style={{ marginTop: 12, backgroundColor: '#6e7781', padding: 12, alignItems: 'center', borderRadius: 8 }}>
         <ThemedText style={{ color: '#fff' }}>{loading ? 'Looking up…' : 'Lookup name (mock)'}</ThemedText>
